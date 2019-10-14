@@ -1,10 +1,6 @@
 extends KinematicBody2D
 
-var object_dragged = false;
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var dragging = false;
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -15,20 +11,28 @@ func _ready():
 #	pass
 	
 func _physics_process(delta):
-	if object_dragged == true:
+	if dragging == true:
 		set_global_position(get_global_mouse_position());
 
 func _on_KinematicBody2D_input_event(viewport, event, shape_idx):
+	if Input.is_action_just_pressed("ui_select"):
+		start_dragging();
+
+	if Input.is_action_just_released("ui_select"):
+		stop_dragging();
+		
+func start_dragging():
+	# workaround for getting 1 tile at the same time (temporary(
 	var tiles = get_tree().get_nodes_in_group("tiles");
 	for tile in tiles:
 		if get_instance_id() == tile.get_instance_id():
 			continue;
-		if tile.object_dragged:
+		if tile.dragging:
 			return;
+
+	set_z_index(2);
+	dragging = true;
 	
-	if Input.is_mouse_button_pressed(BUTTON_LEFT):
-		set_z_index(5);
-		object_dragged = true;
-	else:
-		set_z_index(0);
-		object_dragged = false;
+func stop_dragging():
+	set_z_index(1);
+	dragging = false;

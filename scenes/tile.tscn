@@ -4,7 +4,7 @@
 [ext_resource path="res://assets/grass_01_iso_tile_512_05.png" type="Texture" id=2]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 348.085
+radius = 270.023
 
 [node name="Tile" type="KinematicBody2D" groups=[
 "tiles",
@@ -23,5 +23,5 @@ polygon = PoolVector2Array( 256, -133.2, 256, 134, 252.5, 134, 10.5, 256, -12, 2
 [node name="GlueCollision" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 1 )
 [connection signal="input_event" from="." to="." method="_on_KinematicBody2D_input_event"]
-[connection signal="mouse_entered" from="." to="." method="_on_KinematicBody2D_mouse_entered"]
-[connection signal="mouse_exited" from="." to="." method="_on_KinematicBody2D_mouse_exited"]
+[connection signal="area_shape_entered" from="Area2D" to="." method="_on_Area2D_area_shape_entered"]
+[connection signal="area_shape_exited" from="Area2D" to="." method="_on_Area2D_area_shape_exited"]

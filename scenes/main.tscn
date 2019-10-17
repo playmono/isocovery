@@ -14,8 +14,8 @@ zoom = Vector2( 4, 4 )
 [node name="YSort" type="YSort" parent="."]
 
 [node name="Node2D" parent="YSort" instance=ExtResource( 2 )]
-position = Vector2( 3176.05, 1509.8 )
+position = Vector2( 2972.66, 1838.36 )
 z_index = 1
 
 [node name="Node2D2" parent="YSort" instance=ExtResource( 2 )]
-position = Vector2( 2933.54, 1376.81 )
+position = Vector2( 1329.87, 750.989 )

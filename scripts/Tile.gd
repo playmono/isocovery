@@ -1,6 +1,8 @@
 extends KinematicBody2D
 
-var dragging = false;
+var _dragging = false;
+var _area_overlapping = null;
+var _initial_position = Vector2();
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -11,28 +13,62 @@ func _ready():
 #	pass
 	
 func _physics_process(delta):
-	if dragging == true:
+	if _dragging == true:
 		set_global_position(get_global_mouse_position());
 
+
 func _on_KinematicBody2D_input_event(viewport, event, shape_idx):
-	if Input.is_action_just_pressed("ui_select"):
+	if !_dragging && Input.is_action_just_pressed("ui_select"):
 		start_dragging();
 
-	if Input.is_action_just_released("ui_select"):
+	if _dragging && Input.is_action_just_released("ui_select"):
 		stop_dragging();
-		
+
+
 func start_dragging():
 	# workaround for getting 1 tile at the same time (temporary(
 	var tiles = get_tree().get_nodes_in_group("tiles");
 	for tile in tiles:
 		if get_instance_id() == tile.get_instance_id():
 			continue;
-		if tile.dragging:
+		if tile._dragging:
 			return;
 
 	set_z_index(2);
-	dragging = true;
-	
+	_dragging = true;
+	_initial_position = position;
+
+
 func stop_dragging():
 	set_z_index(1);
-	dragging = false;
+	_dragging = false;
+	
+	if _area_overlapping == null:
+		position = _initial_position;
+		return;
+
+	glue_tile();
+	
+	_area_overlapping = null;
+
+
+func _on_Area2D_area_shape_entered(area_id, area, area_shape, self_shape):
+	_area_overlapping = area;
+
+
+func _on_Area2D_area_shape_exited(area_id, area, area_shape, self_shape):
+	_area_overlapping = null;
+
+
+func glue_tile():
+	var area_overlapping_position = _area_overlapping.get_global_position();
+	var dir_vector =  get_global_position() - area_overlapping_position;
+	var final_vector = Vector2(256, 128);
+
+	if dir_vector.x < 0:
+		final_vector.x *= -1;
+	
+	if dir_vector.y < 0:
+		final_vector.y *= -1;
+		
+	position = area_overlapping_position + final_vector;

@@ -43,13 +43,10 @@ func stop_dragging():
 	set_z_index(1);
 	_dragging = false;
 	
-	if _area_overlapping == null:
+	if set_new_position():
+		_area_overlapping = null;
+	else:
 		position = _initial_position;
-		return;
-
-	glue_tile();
-	
-	_area_overlapping = null;
 
 
 func _on_Area2D_area_shape_entered(area_id, area, area_shape, self_shape):
@@ -60,15 +57,32 @@ func _on_Area2D_area_shape_exited(area_id, area, area_shape, self_shape):
 	_area_overlapping = null;
 
 
-func glue_tile():
+func set_new_position():
+	# are we overlapping some area?
+	if _area_overlapping == null:
+		return false;
+
+	var new_position = calculate_new_position();
+	
+	# there is another tile in this position?
+	var tiles = get_tree().get_nodes_in_group("tiles");
+	for i in tiles:
+		if i.position == new_position:
+			return false;
+	
+	position = new_position;
+	
+	return true;
+
+func calculate_new_position():
 	var area_overlapping_position = _area_overlapping.get_global_position();
 	var dir_vector =  get_global_position() - area_overlapping_position;
 	var final_vector = Vector2(256, 128);
 
 	if dir_vector.x < 0:
 		final_vector.x *= -1;
-	
+
 	if dir_vector.y < 0:
 		final_vector.y *= -1;
-		
-	position = area_overlapping_position + final_vector;
+
+	return area_overlapping_position + final_vector;
